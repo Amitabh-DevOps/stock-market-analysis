@@ -207,6 +207,7 @@ module "codebuild" {
   service_role_arn  = module.iam.codebuild_role_arn
   compute_type      = var.codebuild_compute_type
   image             = var.codebuild_image
+  cache_type        = "NO_CACHE"
 
   ecr_registry_url    = split("/", module.ecr.repository_url)[0]
   ecr_repository_name = module.ecr.repository_name
