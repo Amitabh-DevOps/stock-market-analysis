@@ -1,7 +1,8 @@
 # Stock Market Analytics Dashboard - Dockerfile
 
-# Use Python 3.11 slim image for smaller size
-FROM python:3.11-slim
+# Use Python 3.11 slim image from the Amazon ECR Public mirror to avoid
+# Docker Hub anonymous pull rate limits in CI.
+FROM public.ecr.aws/docker/library/python:3.11-slim
 
 # Set working directory
 WORKDIR /app

@@ -1,8 +1,10 @@
 # Stock Market Analytics Dashboard - Production Dockerfile
 # Optimized for AWS ECS deployment with security best practices
 
-# Use Python 3.11 slim image for smaller size
-FROM python:3.11-slim
+# Use Python 3.11 slim image from the Amazon ECR Public mirror to avoid
+# Docker Hub anonymous pull rate limits in CI.
+# See: https://gallery.ecr.aws
+FROM public.ecr.aws/docker/library/python:3.11-slim
 
 # Add labels for image metadata
 LABEL maintainer="Stock Dashboard Team"

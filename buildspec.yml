@@ -49,6 +49,9 @@ phases:
       
       # Build Docker image (look for Dockerfile in possible locations)
       - echo "Building Docker image..."
+      # Pre-pull base image from Amazon ECR Public to avoid Docker Hub rate limits
+      - echo "Pulling base image from public ECR (fallback if already cached)..."
+      - docker pull public.ecr.aws/docker/library/python:3.11-slim || true
       - |
         if [ -f Dockerfile ]; then
           docker build -t $ECR_REPOSITORY:latest -f Dockerfile .
