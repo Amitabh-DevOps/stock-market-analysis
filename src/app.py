@@ -1,7 +1,12 @@
 # Stock Market Analytics Dashboard - Main Application
 
+import logging
 import streamlit as st
 from src import config
+
+# Configure basic logging so messages appear in CloudWatch
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 from src.services import api_service
 from src.core import data_processor, technical_indicators
 from src.ui import charts
@@ -413,8 +418,10 @@ try:
     st.markdown("*Data provided by Alpha Vantage*")
 
 except ValueError as e:
+    logger.exception("ValueError in main app: %s", e)
     st.error(f"Error: {str(e)}")
     st.info("Please check your settings and try again.")
 except Exception as e:
+    logger.exception("Unhandled exception in main app: %s", e)
     st.error(f"An unexpected error occurred: {str(e)}")
     st.info("Please refresh the page or contact support if the issue persists.")
