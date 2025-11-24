@@ -50,12 +50,27 @@ phases:
       # Build Docker image (look for Dockerfile in possible locations)
       - echo "Building Docker image..."
       - |
+        # Optionally fetch Alpha Vantage API key from Secrets Manager and pass as build-arg
+        DOCKER_BUILD_ARGS=""
+        if [ -n "$ALPHA_VANTAGE_SECRET_NAME" ]; then
+          echo "Fetching Alpha Vantage API key from Secrets Manager: $ALPHA_VANTAGE_SECRET_NAME"
+          API_KEY=$(aws secretsmanager get-secret-value --secret-id "$ALPHA_VANTAGE_SECRET_NAME" --query SecretString --output text 2>/dev/null) || API_KEY=""
+          if [ -n "$API_KEY" ]; then
+            echo "API key retrieved. Passing as build-arg (will be baked into image)."
+            DOCKER_BUILD_ARGS="--build-arg ALPHA_VANTAGE_API_KEY=$API_KEY"
+          else
+            echo "Failed to retrieve API key or secret empty. Proceeding without build-arg."
+          fi
+        else
+          echo "ALPHA_VANTAGE_SECRET_NAME not set; proceeding without build-arg."
+        fi
+
         if [ -f Dockerfile ]; then
-          docker build -t $ECR_REPOSITORY:latest -f Dockerfile .
+          docker build $DOCKER_BUILD_ARGS -t $ECR_REPOSITORY:latest -f Dockerfile .
         elif [ -f ../Dockerfile ]; then
-          docker build -t $ECR_REPOSITORY:latest -f ../Dockerfile ..
+          docker build $DOCKER_BUILD_ARGS -t $ECR_REPOSITORY:latest -f ../Dockerfile ..
         elif [ -f docker/Dockerfile ]; then
-          docker build -t $ECR_REPOSITORY:latest -f docker/Dockerfile ..
+          docker build $DOCKER_BUILD_ARGS -t $ECR_REPOSITORY:latest -f docker/Dockerfile ..
         else
           echo "Dockerfile not found in current, parent, or docker/ directory."
           exit 1

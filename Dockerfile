@@ -12,6 +12,13 @@ LABEL version="1.0.0"
 # Set working directory
 WORKDIR /app
 
+# Build-time ARG for Alpha Vantage API key (optional)
+# WARNING: providing the API key at build time will bake it into the image layers
+# and may expose the secret in your image/ECR. Prefer runtime secrets injection.
+ARG ALPHA_VANTAGE_API_KEY
+# If provided at build time, set as env var inside the image
+ENV ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
+
 # Install system dependencies and security updates
 RUN apt-get update && \
     apt-get upgrade -y && \

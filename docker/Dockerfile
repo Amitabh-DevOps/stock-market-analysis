@@ -6,6 +6,12 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
+# Optional build-time ARG for Alpha Vantage API key
+# WARNING: providing the API key at build time will bake it into the image layers
+# and may expose the secret in your image/ECR. Prefer runtime secrets injection.
+ARG ALPHA_VANTAGE_API_KEY
+ENV ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
+
 # Copy requirements first for better caching
 COPY requirements.txt .
 
